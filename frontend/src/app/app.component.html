@@ -1,0 +1,51 @@
+<!-- Encabezado Financiero InsecurePay -->
+<header style="background: #ffffff; border-bottom: 1px solid var(--border); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);">
+  <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding-top: 14px; padding-bottom: 14px;">
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <a routerLink="/dashboard" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 24px;">💳</span>
+        <span style="font-weight: 800; font-size: 19px; color: var(--primary); letter-spacing: -0.5px;">InsecurePay</span>
+        <span class="badge badge-warning" style="font-size: 11px;">Lab Forense</span>
+      </a>
+
+      <nav style="display: flex; gap: 10px; margin-left: 20px;" *ngIf="authService.isAuthenticated()">
+        <a routerLink="/dashboard" routerLinkActive="btn-secondary" class="btn btn-sm" style="text-decoration: none;">
+          📊 Mis Cuentas
+        </a>
+        <a routerLink="/transferir" routerLinkActive="btn-secondary" class="btn btn-sm" style="text-decoration: none;">
+          💸 Transferir
+        </a>
+        <a routerLink="/transacciones" routerLinkActive="btn-secondary" class="btn btn-sm" style="text-decoration: none;">
+          📑 Movimientos (SQLi)
+        </a>
+      </nav>
+    </div>
+
+    <div>
+      <div *ngIf="authService.currentUser() as user; else noUser" style="display: flex; align-items: center; gap: 14px;">
+        <span style="font-size: 13px; color: var(--text-muted);">
+          Sesión: <strong>{{ user.nombreCompleto }}</strong>
+          <span class="badge" [ngClass]="user.rol === 'ADMIN' ? 'badge-danger' : (user.rol === 'AUDITOR' ? 'badge-info' : 'badge-success')" style="margin-left: 6px;">
+            {{ user.rol }}
+          </span>
+        </span>
+        <button (click)="onLogout()" class="btn btn-secondary btn-sm">Cerrar Sesión</button>
+      </div>
+      <ng-template #noUser>
+        <a routerLink="/login" class="btn btn-primary btn-sm">Iniciar Sesión</a>
+      </ng-template>
+    </div>
+  </div>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>
+
+<footer style="margin-top: 60px; padding: 24px 0; border-top: 1px solid var(--border); text-align: center; color: var(--text-muted); font-size: 13px;">
+  <div class="container">
+    <p><strong>Universidad de Costa Rica - Sede del Atlántico</strong> | IF0009 Desarrollo de Software IV</p>
+    <p style="margin-top: 4px;">Laboratorio 17: Auditoría Forense de Software y Remediación Defensiva OWASP Top 10</p>
+  </div>
+</footer>
+

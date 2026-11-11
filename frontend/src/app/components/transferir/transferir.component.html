@@ -1,0 +1,72 @@
+<div class="container" style="max-width: 800px;">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Emisión de Transferencia Monetaria</h2>
+        <p style="font-size: 14px; color: var(--text-muted);">Transferencia inmediata de fondos entre cuentas del sistema.</p>
+      </div>
+      <div>
+        <a routerLink="/dashboard" class="btn btn-secondary btn-sm">Volver al Inicio</a>
+      </div>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+    <div *ngIf="successMsg" class="alert alert-info">{{ successMsg }}</div>
+
+    <form (ngSubmit)="onTransferir()">
+      <!-- CAMPO VULNERABLE A IDOR: Selección de cuenta de origen sin validar pertenencia -->
+      <div class="form-group" style="background: #fffbeb; padding: 14px; border-radius: var(--radius); border: 1px solid #fde68a;">
+        <label for="origen" style="color: #92400e;">
+          ⚠️ Cuenta de Origen a Debitar (Vector IDOR / BOLA - Permite seleccionar cuentas ajenas):
+        </label>
+        <select id="origen" [(ngModel)]="transferencia.cuentaOrigenId" name="cuentaOrigenId">
+          <option *ngFor="let c of todasLasCuentas" [ngValue]="c.id">
+            Cuenta #{{ c.id }} - {{ c.titular }} ({{ c.numeroCuenta }}) - Saldo: ₡{{ c.saldo | number:'1.2-2' }}
+          </option>
+        </select>
+        <span style="font-size: 12px; color: #b45309; display: block; margin-top: 4px;">
+          Note que un atacante puede seleccionar la cuenta de María Rojas (#2) y debitarle fondos sin su autorización.
+        </span>
+      </div>
+
+      <div class="form-group">
+        <label for="destino">Número de Cuenta Destino (IBAN)</label>
+        <input type="text" id="destino" [(ngModel)]="transferencia.numeroCuentaDestino" name="numeroCuentaDestino"
+               placeholder="Ej: CR05015202001026458901" required>
+      </div>
+
+      <div class="form-group">
+        <label for="monto">Monto a Transferir (₡ CRC)</label>
+        <input type="number" id="monto" [(ngModel)]="transferencia.monto" name="monto"
+               min="1" placeholder="Ej: 50000" required>
+      </div>
+
+      <!-- CAMPO VULNERABLE A STORED XSS -->
+      <div class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <label for="concepto" style="color: #b91c1c; margin-bottom: 0;">
+            Concepto del Pago (Vector XSS Almacenado):
+          </label>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn btn-secondary btn-sm" (click)="inyectarPayload('alert')">
+              Inyectar &lt;img onerror&gt;
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" (click)="inyectarPayload('html')">
+              Inyectar HTML
+            </button>
+          </div>
+        </div>
+        <textarea id="concepto" [(ngModel)]="transferencia.conceptoHtml" name="conceptoHtml" rows="3"
+                  placeholder="Ingrese el detalle o concepto de la transferencia..."></textarea>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+        <a routerLink="/dashboard" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary" [disabled]="loading">
+          {{ loading ? 'Procesando Transacción...' : 'Confirmar y Transferir Fondos' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

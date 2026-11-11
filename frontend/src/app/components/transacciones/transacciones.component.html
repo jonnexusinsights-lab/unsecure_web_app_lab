@@ -1,0 +1,106 @@
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h2>Historial de Movimientos Bancarios</h2>
+        <p style="font-size: 14px; color: var(--text-muted);">Registro de débitos y créditos en la red bancaria InsecurePay.</p>
+      </div>
+      <div>
+        <a routerLink="/transferir" class="btn btn-primary">+ Nueva Transferencia</a>
+      </div>
+    </div>
+
+    <!-- Barra de Búsqueda Vulnerable a SQL Injection -->
+    <div style="margin-bottom: 24px; background: #f8fafc; padding: 18px; border-radius: var(--radius); border: 1px solid var(--border);">
+      <label for="search" style="font-weight: 700;">Filtro Forense de Transacciones (Búsqueda por Concepto)</label>
+      <div style="display: flex; gap: 10px; margin-top: 6px;">
+        <input type="text" id="search" [(ngModel)]="terminoBusqueda" (keyup.enter)="ejecutarBusqueda()"
+               placeholder="Buscar por concepto o inyectar payload SQL..." style="flex: 1;">
+        <button type="button" class="btn btn-primary" (click)="ejecutarBusqueda()">Buscar</button>
+        <button type="button" class="btn btn-secondary" (click)="cargarTransacciones()">Restablecer</button>
+      </div>
+
+      <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 12px; color: var(--text-muted); font-weight: 700;">PAYLOAD FORENSE SQLi:</span>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="inyectarPayloadSql()">
+          Inyectar Tautología: <code>' OR '1'='1</code>
+        </button>
+      </div>
+    </div>
+
+    <!-- Exposición de Error / Stack Trace SQL -->
+    <div *ngIf="errorInfo" class="alert alert-danger" style="font-family: monospace; font-size: 13px; white-space: pre-wrap;">
+      {{ errorInfo }}
+    </div>
+
+    <!-- Tabla de Transacciones -->
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Origen (Débito)</th>
+            <th>Destino (Crédito)</th>
+            <th>Monto</th>
+            <th>Estado</th>
+            <th>Comprobante</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transacciones">
+            <td><strong>#{{ t.id }}</strong></td>
+            <td style="font-size: 13px; color: var(--text-muted);">{{ t.fecha }}</td>
+            <td>
+              <strong>{{ t.titularOrigen }}</strong><br/>
+              <span class="code-font" style="font-size: 12px; color: var(--text-muted);">{{ t.numeroCuentaOrigen }}</span>
+            </td>
+            <td>
+              <strong>{{ t.titularDestino }}</strong><br/>
+              <span class="code-font" style="font-size: 12px; color: var(--text-muted);">{{ t.numeroCuentaDestino }}</span>
+            </td>
+            <td>
+              <strong style="color: var(--primary); font-size: 15px;">₡ {{ t.monto | number:'1.2-2' }}</strong>
+            </td>
+            <td><span class="badge badge-success">{{ t.estado }}</span></td>
+            <td>
+              <button class="btn btn-secondary btn-sm" (click)="verComprobante(t)">
+                Ver Recibo (XSS)
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL / VISTA DE COMPROBANTE CON RENDERIZADO INSEGURO XSS -->
+  <div *ngIf="transaccionSeleccionada" class="card" style="border: 2px solid #f87171; background: #fffaf0;">
+    <div class="card-header" style="border-bottom-color: #fecaca;">
+      <div>
+        <span class="badge badge-danger">COMPROBANTE BANCARIO OFICIAL (SINK XSS ALMACENADO)</span>
+        <h3 style="margin-top: 6px;">Transacción #{{ transaccionSeleccionada.id }}</h3>
+      </div>
+      <button class="btn btn-secondary btn-sm" (click)="cerrarComprobante()">✕ Cerrar</button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+      <div>
+        <span style="font-size: 12px; color: var(--text-muted);">Titular de Origen:</span>
+        <p style="font-weight: 700;">{{ transaccionSeleccionada.titularOrigen }}</p>
+      </div>
+      <div>
+        <span style="font-size: 12px; color: var(--text-muted);">Monto Transferido:</span>
+        <p style="font-weight: 800; font-size: 20px; color: var(--primary);">₡ {{ transaccionSeleccionada.monto | number:'1.2-2' }}</p>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label style="color: #b91c1c;">Detalle del Concepto (Renderizado HTML en Directo - Bypass DomSanitizer):</label>
+      <div style="background: #ffffff; padding: 18px; border-radius: var(--radius); border: 2px dashed #ef4444; min-height: 70px;"
+           [innerHTML]="conceptoSeguro">
+      </div>
+    </div>
+  </div>
+</div>
+

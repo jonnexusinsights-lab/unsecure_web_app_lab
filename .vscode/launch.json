@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Lanzar Backend Spring Boot (InsecurePay)",
+      "request": "launch",
+      "mainClass": "cr.ac.ucr.if0009.insecurepay.InsecurePayApplication",
+      "projectName": "insecure-pay-backend"
+    },
+    {
+      "name": "Lanzar Frontend en Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:4200",
+      "webRoot": "${workspaceFolder}/frontend"
+    }
+  ]
+}
+

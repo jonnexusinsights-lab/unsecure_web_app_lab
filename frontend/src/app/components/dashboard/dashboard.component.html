@@ -1,0 +1,101 @@
+<div class="container">
+  <!-- Tarjeta de Bienvenida y Balance -->
+  <div class="card" style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); color: #ffffff;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+      <div>
+        <p style="font-size: 14px; opacity: 0.9;">Bienvenido a su Billetera Digital</p>
+        <h2 style="color: #ffffff; font-size: 24px; margin-top: 4px;">{{ authService.currentUser()?.nombreCompleto }}</h2>
+        <span class="badge" style="background: rgba(255,255,255,0.2); color: #ffffff; margin-top: 8px;">
+          Usuario ID: #{{ authService.currentUser()?.usuarioId }} | Rol: {{ authService.currentUser()?.rol }}
+        </span>
+      </div>
+      <div>
+        <a routerLink="/transferir" class="btn" style="background: #ffffff; color: var(--primary);">
+          💸 Realizar Transferencia
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mis Cuentas Autorizadas -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3>Mis Cuentas Bancarias</h3>
+        <p style="font-size: 13px; color: var(--text-muted);">Cuentas asociadas formalmente a su usuario autenticado.</p>
+      </div>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+      <div *ngFor="let cuenta of misCuentas" style="border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; background: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span class="badge badge-info">{{ cuenta.tipoCuenta }}</span>
+          <span class="badge badge-success">Activa</span>
+        </div>
+        <p class="code-font" style="font-size: 14px; font-weight: 600; margin-top: 12px; color: #334155;">
+          {{ cuenta.numeroCuenta }}
+        </p>
+        <p style="font-size: 26px; font-weight: 800; color: var(--primary); margin-top: 8px;">
+          ₡ {{ cuenta.saldo | number:'1.2-2' }}
+        </p>
+        <div style="margin-top: 14px; display: flex; gap: 8px;">
+          <a [routerLink]="['/transacciones']" class="btn btn-secondary btn-sm" style="flex: 1;">Ver Movimientos</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DE AUDITORÍA FORENSE IDOR / BOLA -->
+  <div class="card" style="border-left: 4px solid var(--warning); background: #fffbeb;">
+    <div class="card-header" style="border-bottom-color: #fde68a;">
+      <div>
+        <h3 style="color: #92400e;">⚠️ Vector de Auditoría Forense: Broken Access Control (IDOR / BOLA)</h3>
+        <p style="font-size: 13px; color: #b45309;">
+          Pruebe consultar cuentas y balances ajenos alterando el parámetro <code>&#123;id&#125;</code> en el endpoint <code>GET /api/cuentas/&#123;id&#125;</code> sin verificación de pertenencia:
+        </p>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; align-items: flex-end; max-width: 500px;">
+      <div class="form-group" style="flex: 1; margin-bottom: 0;">
+        <label for="cuentaId" style="color: #92400e;">ID de Cuenta Bancaria a Consultar</label>
+        <input type="number" id="cuentaId" [(ngModel)]="cuentaIdAInspeccionar" placeholder="Ej: 2">
+      </div>
+      <button type="button" class="btn btn-primary" (click)="inspeccionarCuentaPorId()">
+        Consultar por IDOR
+      </button>
+    </div>
+
+    <div *ngIf="auditErrorMsg" class="alert alert-danger" style="margin-top: 16px;">
+      {{ auditErrorMsg }}
+    </div>
+
+    <!-- Resultado de la Exfiltración IDOR -->
+    <div *ngIf="cuentaEspiada" style="margin-top: 16px; background: #ffffff; border: 1px solid #fde68a; border-radius: var(--radius); padding: 18px;">
+      <span class="badge badge-danger">EVIDENCIA FORENSE IDOR CAPTURADA</span>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+        <div>
+          <span style="font-size: 12px; color: var(--text-muted);">Titular Registrado:</span>
+          <p style="font-size: 15px; font-weight: 700; color: #1e293b;">{{ cuentaEspiada.titular }}</p>
+        </div>
+        <div>
+          <span style="font-size: 12px; color: var(--text-muted);">Número de Cuenta (IBAN):</span>
+          <p class="code-font" style="font-size: 14px; font-weight: 600;">{{ cuentaEspiada.numeroCuenta }}</p>
+        </div>
+        <div>
+          <span style="font-size: 12px; color: var(--text-muted);">Saldo Bancario Exfiltrado:</span>
+          <p style="font-size: 22px; font-weight: 800; color: var(--danger);">
+            ₡ {{ cuentaEspiada.saldo | number:'1.2-2' }}
+          </p>
+        </div>
+        <div>
+          <span style="font-size: 12px; color: var(--text-muted);">Usuario Propietario (usuario_id):</span>
+          <p class="code-font" style="font-size: 14px;">#{{ cuentaEspiada.usuarioId }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

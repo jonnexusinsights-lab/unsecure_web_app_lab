@@ -1,0 +1,33 @@
+{
+  "folders": [
+    {
+      "name": "Backend (Spring Boot 3 + H2)",
+      "path": "backend"
+    },
+    {
+      "name": "Frontend (Angular 19)",
+      "path": "frontend"
+    }
+  ],
+  "settings": {
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "typescript.tsdk": "frontend/node_modules/typescript/lib",
+    "files.exclude": {
+      "**/.git": true,
+      "**/.svn": true,
+      "**/.hg": true,
+      "**/CVS": true,
+      "**/.DS_Store": true,
+      "**/Thumbs.db": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "vscjava.vscode-java-pack",
+      "vmware.vscode-spring-boot",
+      "angular.ng-template"
+    ]
+  }
+}
+

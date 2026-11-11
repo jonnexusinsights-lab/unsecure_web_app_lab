@@ -1,0 +1,50 @@
+<div class="container" style="max-width: 480px; margin-top: 60px;">
+  <div class="card">
+    <div style="text-align: center; margin-bottom: 24px;">
+      <span style="font-size: 40px;">💳</span>
+      <h2 style="color: var(--primary); margin-top: 8px;">InsecurePay</h2>
+      <p style="color: var(--text-muted); font-size: 14px;">Billetera Digital & Banca en Línea (Laboratorio Forense)</p>
+    </div>
+
+    <div *ngIf="errorMsg" class="alert alert-danger">
+      {{ errorMsg }}
+    </div>
+
+    <form (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label for="username">Usuario Financiero</label>
+        <input type="text" id="username" [(ngModel)]="username" name="username" placeholder="Ej: carlos_mora" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input type="password" id="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;" [disabled]="loading">
+        {{ loading ? 'Autenticando...' : 'Ingresar a la Plataforma' }}
+      </button>
+    </form>
+
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed var(--border);">
+      <p style="font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 8px;">
+        USUARIOS DE PRUEBA PRECONFIGURADOS:
+      </p>
+      <div style="display: flex; flex-direction: column; gap: 6px;">
+        <button type="button" class="btn btn-secondary btn-sm" (click)="fillUser('carlos_mora', 'carlos123')">
+          Cliente Base: <strong>carlos_mora</strong> (Saldo: ₡250,000)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="fillUser('maria_rojas', 'maria123')">
+          Cliente Corporativo: <strong>maria_rojas</strong> (Saldo: ₡4,850,000)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="fillUser('juan_perez', 'juan123')">
+          Cliente 3: <strong>juan_perez</strong> (Saldo: ₡75,000)
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="fillUser('auditor_seguridad', 'auditor2026')">
+          Auditor Forense: <strong>auditor_seguridad</strong> (Rol: AUDITOR)
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
